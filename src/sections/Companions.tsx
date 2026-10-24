@@ -37,7 +37,9 @@ function readableOnWhite(hex: string) {
   return lum > 0.7 ? '#6b7a90' : hex;
 }
 
-const BOTTOM_H = 158;
+const BOTTOM_H = 104;
+const FLIP_SECONDS = 0.65;
+const FLIP_HALF = FLIP_SECONDS / 2;
 
 type ActiveAudio = { audio: HTMLAudioElement; stop: () => void };
 
@@ -146,16 +148,20 @@ export default function Companions() {
 
   return (
     <section ref={sectionRef} className="relative z-10 px-[5vw] py-24 lg:py-32">
-      <div className="text-center mb-16">
+      <div className="text-center mb-10 xl:mb-16">
         <h2
           className="font-display text-white"
           style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 300, letterSpacing: '0.1em' }}
         >
           月亮里的遗物
         </h2>
+        <p className="font-body text-white/75 mt-3" style={{ fontSize: '0.8rem', letterSpacing: '0.1em', textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+          点击卡片翻面<span className="xl:hidden"> · 左右滑动查看全部</span>
+        </p>
       </div>
 
-      <div className="flex flex-nowrap justify-center items-start gap-3">
+      {/* 窄屏时四张卡放不下，改成横向滑动；宽屏时居中排开 */}
+      <div className="no-scrollbar flex flex-nowrap justify-start xl:justify-center items-start gap-3 overflow-x-auto xl:overflow-visible snap-x snap-mandatory -mx-[5vw] px-[5vw] py-10 xl:mx-0 xl:px-0 xl:py-0">
         {chapters.map((chapter, i) => {
           const char = chapter.character;
           const layout = LAYOUT[i] ?? LAYOUT[LAYOUT.length - 1];
@@ -166,7 +172,7 @@ export default function Companions() {
             <div
               key={chapter.id}
               ref={el => { cardsRef.current[i] = el; }}
-              className="opacity-0 flex-shrink-0"
+              className="opacity-0 flex-shrink-0 snap-center"
               style={{ marginTop: `${layout.mt}px` }}
             >
               <div
@@ -187,7 +193,7 @@ export default function Companions() {
                     position: 'relative', width: '100%', height: '100%',
                     transformStyle: 'preserve-3d',
                     transform: flipped[i] ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                    transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: `transform ${FLIP_SECONDS}s cubic-bezier(0.4, 0, 0.2, 1)`,
                   }}
                 >
                   {/* Front */}
@@ -196,6 +202,10 @@ export default function Companions() {
                     style={{
                       position: 'absolute', inset: 0,
                       backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
+                      // 部分浏览器（尤其 Safari）里图片层不遵守 backface-visibility，
+                      // 翻到一半时直接隐藏正面，背面就不会透出镜像的照片
+                      visibility: flipped[i] ? 'hidden' : 'visible',
+                      transition: `visibility 0s linear ${FLIP_HALF}s`,
                       background: '#fff', borderRadius: '4px',
                       boxShadow: hovered === i ? '0 16px 48px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.28)',
                       cursor: 'pointer', display: 'flex', flexDirection: 'column', overflow: 'hidden',
@@ -248,7 +258,7 @@ export default function Companions() {
                           {char.role}
                         </p>
                       </div>
-                      <VoiceButton src={char.audio} color={chapter.color} activeRef={activeAudioRef} />
+                      {char.audio && <VoiceButton src={char.audio} color={chapter.color} activeRef={activeAudioRef} />}
                     </div>
                   </div>
 
@@ -259,6 +269,8 @@ export default function Companions() {
                       position: 'absolute', inset: 0,
                       backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
                       transform: 'rotateY(180deg)',
+                      visibility: flipped[i] ? 'visible' : 'hidden',
+                      transition: `visibility 0s linear ${FLIP_HALF}s`,
                       background: '#fff', borderRadius: '4px',
                       boxShadow: hovered === i ? '0 16px 48px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.28)',
                       cursor: 'pointer', display: 'flex', flexDirection: 'column',

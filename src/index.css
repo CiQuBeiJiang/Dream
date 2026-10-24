@@ -129,6 +129,14 @@
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
   }
 
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .vignette-overlay {
     position: fixed;
     inset: 0;

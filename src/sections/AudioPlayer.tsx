@@ -39,6 +39,9 @@ export default function AudioPlayer({ src, color, large = false, label }: AudioP
     audio.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
   };
 
+  // 没有录音时整块不显示
+  if (!src) return null;
+
   const statusText = !canPlay
     ? '录音即将上线 · Coming Soon'
     : label ?? (playing ? '暂停' : '聆听故事');

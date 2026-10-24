@@ -69,6 +69,12 @@ export default function Seasons() {
             className={`season-panel glass-panel glass-panel-${chapter.id} relative max-w-2xl lg:max-w-xl w-full p-8 lg:p-12 opacity-0`}
             style={{ borderLeft: `3px solid ${chapter.color}`, background: chapter.glassBg }}
           >
+            <p
+              className="font-mono text-white/50 mb-2"
+              style={{ fontSize: '0.7rem', letterSpacing: '0.2em' }}
+            >
+              {chapter.title.split(' · ')[0]}
+            </p>
             <h3
               className="font-display text-white mb-6"
               style={{ fontSize: 'clamp(1.2rem, 2.2vw, 1.6rem)', fontWeight: 300, letterSpacing: '0.12em' }}
@@ -76,12 +82,12 @@ export default function Seasons() {
               {chapter.title.split(' · ').slice(1).join(' · ')}
             </h3>
 
-            <p
-              className="font-body text-white/85"
-              style={{ fontSize: 'clamp(0.9rem, 1.4vw, 1.05rem)', lineHeight: 2.1, letterSpacing: '0.04em' }}
+            <div
+              className="font-body text-white/85 space-y-4"
+              style={{ fontSize: 'clamp(0.9rem, 1.4vw, 1.05rem)', lineHeight: 2, letterSpacing: '0.04em' }}
             >
-              {chapter.story}
-            </p>
+              {chapter.story.map((para, j) => <p key={j}>{para}</p>)}
+            </div>
 
             <AudioPlayer src={chapter.audio} color={chapter.color} />
           </div>
