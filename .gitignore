@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+.env
+*.log
+.vite/
+# 设计稿与素材，体积大，只留本地
+design/
+prompt.md
